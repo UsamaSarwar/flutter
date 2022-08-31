@@ -1,0 +1,20 @@
+name: telegram
+description: Telegram Message Sender
+version: 0.0.2
+homepage: 
+
+environment:
+  sdk: '>=2.18.0 <3.0.0'
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  url_launcher:
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
