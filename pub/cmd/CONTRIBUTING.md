@@ -63,6 +63,7 @@ Please add script files into the list as mentioned below:
     'doctor.sh',
     'run.sh',
     'build.sh',
+    'pub.sh',
     // Add your scripts here...
   ];
 ```

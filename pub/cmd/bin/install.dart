@@ -19,7 +19,7 @@ void main() async {
     for (String script in scripts) {
       /// Get the script data
       HttpClientRequest request = await client.getUrl(Uri.parse(
-          'https://raw.githubusercontent.com/UsamaSarwar/cmd/main/flutter/cmd/$script'));
+          'https://raw.githubusercontent.com/UsamaSarwar/flutter/main/pub/cmd/cmd/$script'));
 
       /// Get the response
       HttpClientResponse response = await request.close();
