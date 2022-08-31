@@ -1,0 +1,19 @@
+name: cmd
+description: The cmd package is a command line tool for Flutter to run the most common shell/bash commands via pre-built scripts.
+version: 0.0.8
+homepage: https://github.com/UsamaSarwar/cmd/tree/main/flutter
+
+environment:
+  sdk: ">=2.17.6 <3.0.0"
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
