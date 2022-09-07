@@ -10,7 +10,7 @@
 <p align="justify">
 A simple and light weight utility for sending messages via Telegram. Telegram is a globally accessible freemium, cross-platform, cloud-based instant messaging service. The service also provides optional end-to-end encrypted chats and video calling, VoIP, file sharing and several other features. </p>
 
-<img align="right" alt="flutter cmd" src="./assets/coding.gif" height="auto" width ="150"/>
+<img align="right" alt="flutter cmd" src="https://raw.githubusercontent.com/UsamaSarwar/flutter/main/pub/telegram/assets/coding.gif" height="auto" width ="150"/>
 
 ## Features
 
@@ -36,7 +36,7 @@ dependencies:
   telegram:
 ```
 
-<img align="right" alt="FAQs" src="./assets/faq.png" height="auto" width ="30%"/>
+<img align="right" alt="FAQs" src="https://raw.githubusercontent.com/UsamaSarwar/flutter/main/pub/telegram/assets/faq.png" height="auto" width ="30%"/>
 
 ## Usage 📨
 
@@ -66,11 +66,11 @@ Telegram.getLink(
 
 You are warmly welcome for contributing **telegram** package. Checkout this [contribution guide.](./CONTRIBUTING.md)
 
-<p align="center"> <img src="./assets/contribution.svg" alt="telegram contributions" /> </p>
+<p align="center"> <img src="https://raw.githubusercontent.com/UsamaSarwar/flutter/main/pub/telegram/assets/contribution.svg" alt="telegram contributions" /> </p>
 
 <p align="center">Open Source Contributor from <b>Punjab, Pakistan</b> 🇵🇰 </p>
 <div align="center"><br>
 <p><a href="https://www.buymeacoffee.com/UsamaSarwar"> <img align="center" src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" height="40" width="168" alt="Buy me a Coffee ☕" /></a></p>
 </div>
 
-<br><p align="center"> <img src="./assets/flutter.jpg" alt="Flutter telegram package" /> </p>
+<br><p align="center"> <img src="https://raw.githubusercontent.com/UsamaSarwar/flutter/main/pub/telegram/assets/flutter.jpg" alt="Flutter telegram package" /> </p>
