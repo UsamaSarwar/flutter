@@ -2,7 +2,7 @@
 
 ## The Dash Avatar's 🐦
 
-> [Developer](Developer) | [Designer](Designer) | [Manager](Manager)
+> [Developer](developer) | [Designer](designer) | [Manager](manager)
 
 <p align="center">
   <img src="team.png" />
