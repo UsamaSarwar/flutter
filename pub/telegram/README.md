@@ -10,9 +10,10 @@
 <p align="justify">
 A simple and light weight utility for sending messages via Telegram. Telegram is a globally accessible freemium, cross-platform, cloud-based instant messaging service. The service also provides optional end-to-end encrypted chats and video calling, VoIP, file sharing and several other features. </p>
 
+## Features
+
 <img align="right" alt="flutter cmd" src="https://raw.githubusercontent.com/UsamaSarwar/flutter/main/pub/telegram/assets/coding.gif" height="auto" width ="150"/>
 
-## Features
 
 📨 Send Message via Telegram<br>
 🔗 Telegram Link Generator<br>
@@ -36,9 +37,9 @@ dependencies:
   telegram:
 ```
 
-<img align="right" alt="FAQs" src="https://raw.githubusercontent.com/UsamaSarwar/flutter/main/pub/telegram/assets/faq.png" height="auto" width ="30%"/>
-
 ## Usage 📨
+
+<img align="right" alt="FAQs" src="https://raw.githubusercontent.com/UsamaSarwar/flutter/main/pub/telegram/assets/faq.png" height="auto" width ="30%"/>
 
 ```dart
 /// Send message via Telegram
