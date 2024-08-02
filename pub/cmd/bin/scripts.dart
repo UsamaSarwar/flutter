@@ -4,11 +4,13 @@ part of 'install.dart';
 List<String> scripts = [
   'doctor.sh',
   'run.sh',
-  'clean.sh'
+  'clean.sh',
   'build.sh',
   'pub.sh',
+
   /// Firebase scripts
   'deploy.sh',
   'cors_gcs.sh',
+
   /// Add further scripts here...
 ];
