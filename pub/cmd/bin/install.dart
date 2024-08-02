@@ -3,7 +3,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'scripts.dart';
+part 'scripts.dart';
 
 /// Integrating Scripts into the code
 void main() async {

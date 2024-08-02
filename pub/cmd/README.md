@@ -14,9 +14,13 @@ Flutter, a mobile development UI kit managed by Google comes with the handy CLI 
 
 <img align="right" alt="flutter cmd" src="https://raw.githubusercontent.com/UsamaSarwar/flutter/main/pub/cmd/assets/coding.gif" height="auto" width ="150"/>
 
-- [doctor](https://raw.githubusercontent.com/UsamaSarwar/flutter/main/pub/cmd/cmd/doctor.sh)
-- [run](https://raw.githubusercontent.com/UsamaSarwar/flutter/main/pub/cmd/cmd/run.sh)
-- [build](https://raw.githubusercontent.com/UsamaSarwar/flutter/main/pub/cmd/cmd/build.sh)
+- [flutter doctor](https://raw.githubusercontent.com/UsamaSarwar/flutter/main/pub/cmd/cmd/doctor.sh)
+- [flutter run](https://raw.githubusercontent.com/UsamaSarwar/flutter/main/pub/cmd/cmd/run.sh)
+- [flutter build](https://raw.githubusercontent.com/UsamaSarwar/flutter/main/pub/cmd/cmd/build.sh)
+- [flutter clean](https://raw.githubusercontent.com/UsamaSarwar/flutter/main/pub/cmd/cmd/clean.sh)
+- [flutter pub](https://raw.githubusercontent.com/UsamaSarwar/flutter/main/pub/cmd/cmd/pub.sh)
+- [firebase deploy](https://raw.githubusercontent.com/UsamaSarwar/flutter/main/pub/cmd/cmd/deploy.sh)
+- [gsutil cors](https://raw.githubusercontent.com/UsamaSarwar/flutter/main/pub/cmd/cmd/cors_gcs.sh)
 - more coming soon...
 
 ## Installation
@@ -50,9 +54,13 @@ In your project root directory you will find a folder **cmd** that contains all 
 ```bash
 ├── project
 │   ├── cmd
-│   │   ├── build.sh
 │   │   ├── doctor.sh
 │   │   ├── run.sh
+│   │   ├── build.sh
+│   │   ├── clean.sh
+│   │   ├── pub.sh
+│   │   ├── deploy.sh
+│   │   ├── cors_gcs.sh
 ```
 
 ## Usage in VS Code 🧑🏻‍💻
