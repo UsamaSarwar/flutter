@@ -1,3 +1,6 @@
+## 0.0.13
+- [Updates] Minor Updates
+
 ## 0.0.12
 
 - [Added] `flutter clean` commands in `clean.sh` script
