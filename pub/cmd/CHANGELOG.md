@@ -1,3 +1,9 @@
+## 0.0.8-alpha-1
+- [Added] `flutter pub` commands in `pub.sh` script
+- [Added] `flutter doctor` commands in `doctor.sh` script
+- [Added] `flutter run` commands in `run.sh` script
+- [Updated] `README.md`
+
 ## 0.0.8
 - Pub.dev Package Publishing
 

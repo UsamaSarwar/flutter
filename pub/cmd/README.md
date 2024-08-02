@@ -40,7 +40,7 @@ Run the following commands below to install **cmd**:
 
 ```bash
 flutter pub get
-flutter pub run cmd:install
+dart run cmd:install
 ```
 
 In your project root directory you will find a folder **cmd** that contains all available scripts.
