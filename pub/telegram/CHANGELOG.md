@@ -1,3 +1,5 @@
+## 0.0.7
+Minor Updates
 ## 0.0.6
 Updated `README.md`
 ## 0.0.5

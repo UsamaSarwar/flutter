@@ -1,6 +1,6 @@
 name: telegram
 description: A simple and light weight utility for sending message via Telegram...
-version: 0.0.6
+version: 0.0.7
 homepage: https://www.usama.dev
 repository: https://github.com/UsamaSarwar/flutter/tree/main/pub/telegram
 
@@ -21,7 +21,7 @@ dev_dependencies:
 
 screenshots:
   - description: "© Telegram"
-    path: assets/logo.png
+    path: assets/logo.webp
 
 topics:
   - telegram
