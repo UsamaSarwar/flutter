@@ -26,7 +26,8 @@ class Telegram {
     }
     try {
       if (message != null && message.trim().isNotEmpty) {
-        return Uri.parse('https://t.me/$username?text=${Uri.encodeFull(message)}');
+        return Uri.parse(
+            'https://t.me/$username?text=${Uri.encodeFull(message)}');
       } else {
         return Uri.parse('https://t.me/$username');
       }
@@ -123,7 +124,8 @@ class Telegram {
       }
       if (kDebugMode) {
         if (message != null && message.trim().isNotEmpty) {
-          print('Sending message to $username...\nMessage: $message\nURL: $url');
+          print(
+              'Sending message to $username...\nMessage: $message\nURL: $url');
         } else {
           print('Sending message to $username...\nURL: $url');
         }
@@ -272,7 +274,8 @@ class Telegram {
         'text=Contact: $firstName ${lastName ?? ""}';
 
     try {
-      bool launched = await launchUrl(Uri.parse(contactUrl), mode: LaunchMode.externalNonBrowserApplication);
+      bool launched = await launchUrl(Uri.parse(contactUrl),
+          mode: LaunchMode.externalNonBrowserApplication);
       if (!launched) {
         throw Exception('Could not share contact via Telegram.');
       }
@@ -302,7 +305,8 @@ class Telegram {
     Uri groupUri = Uri.parse('https://t.me/$username');
 
     try {
-      bool launched = await launchUrl(groupUri, mode: LaunchMode.externalNonBrowserApplication);
+      bool launched = await launchUrl(groupUri,
+          mode: LaunchMode.externalNonBrowserApplication);
       if (!launched) {
         throw Exception('Could not open group: $username');
       }
@@ -334,7 +338,8 @@ class Telegram {
     Uri mediaUri = Uri.parse('https://t.me/share/url?url=$filePath');
 
     try {
-      bool launched = await launchUrl(mediaUri, mode: LaunchMode.externalNonBrowserApplication);
+      bool launched = await launchUrl(mediaUri,
+          mode: LaunchMode.externalNonBrowserApplication);
       if (!launched) {
         throw Exception('Could not send media file.');
       }
@@ -356,7 +361,8 @@ class Telegram {
   /// ```dart
   /// bool exists = await checkUsernameAvailability(username: 'exampleUser');
   /// ```
-  static Future<bool> checkUsernameAvailability({required String username}) async {
+  static Future<bool> checkUsernameAvailability(
+      {required String username}) async {
     if (username.trim().isEmpty) {
       throw ArgumentError('Username cannot be empty.');
     }
@@ -389,7 +395,8 @@ class Telegram {
     Uri botUri = Uri.parse('https://t.me/$username');
 
     try {
-      bool launched = await launchUrl(botUri, mode: LaunchMode.externalNonBrowserApplication);
+      bool launched = await launchUrl(botUri,
+          mode: LaunchMode.externalNonBrowserApplication);
       if (!launched) {
         throw Exception('Could not open bot: $username');
       }

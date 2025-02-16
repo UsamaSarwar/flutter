@@ -41,7 +41,7 @@ Add **telegram** this in your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  telegram:
+  telegram: latest_version
 ```
 
 ## Usage 📨

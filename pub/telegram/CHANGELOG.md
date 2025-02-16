@@ -1,4 +1,4 @@
-## 0.0.8
+## 0.0.9
 📨 Send Message via Telegram
 
 🔗 Telegram Link Generator
