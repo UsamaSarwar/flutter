@@ -14,10 +14,17 @@ A simple and light weight utility for sending messages via Telegram. Telegram is
 
 <img align="right" alt="flutter cmd" src="https://raw.githubusercontent.com/UsamaSarwar/flutter/main/pub/telegram/assets/coding.gif" height="auto" width ="150"/>
 
-
-📨 Send Message via Telegram<br>
-🔗 Telegram Link Generator<br>
-📌 Copy Telegram Link<br>
+📨 Send Message via Telegram<br>  
+🔗 Telegram Link Generator<br>  
+📌 Copy Telegram Link<br>  
+💬 Open Chat Directly<br>  
+📢 Join Telegram Channel/Group<br>  
+✅ Check if Telegram is Installed<br>  
+📞 Share Contact via Telegram<br>  
+👥 Open Telegram Group<br>  
+📷 Send Media via Telegram<br>  
+🔍 Check Username Availability<br>  
+🤖 Open Telegram Bot<br>  
 🔥 _more coming soon..._
 
 ## Installation
@@ -48,6 +55,7 @@ Telegram.send(
   message:'Thanks for building Telegram Package :)'
 );
 ```
+
 ```dart
 /// Copy Telegram message Link to clipboard
 Telegram.copyLinkToClipboard(
@@ -55,12 +63,80 @@ Telegram.copyLinkToClipboard(
   message:'Thanks for building Telegram Package :)'
 );
 ```
+
 ```dart
 /// Get Telegram message link as String
 Telegram.getLink(
   username:'UsamaSarwar',
   message:'Thanks for building Telegram Package :)'
 );
+```
+
+```dart
+/// Open chat with a specific username
+Telegram.openChat(username: 'UsamaSarwar');
+```
+
+```dart
+/// Join a Telegram channel or group using an invite link
+Telegram.joinChannel(inviteLink: 'https://t.me/joinchat/XXXXXXX');
+```
+
+```dart
+/// Join a Telegram channel or group using an invite link
+Telegram.joinChannel(inviteLink: 'https://t.me/joinchat/XXXXXXX');
+```
+
+```dart
+/// Check if Telegram is installed on the device
+bool installed = await Telegram.isTelegramInstalled();
+print('Telegram installed: $installed');
+```
+
+```dart
+/// Share a contact via Telegram
+Telegram.shareContact(
+  phone: '+923100007773',
+  firstName: 'Usama',
+  lastName: 'Sarwar'
+);
+```
+
+```dart
+/// Open a Telegram group by username
+Telegram.openGroup(username: 'yourgroupname');
+```
+
+```dart
+/// Send a media file via Telegram
+Telegram.sendMedia(filePath: 'https://example.com/sample.jpg');
+```
+
+```dart
+/// Check if a Telegram username is available
+bool exists = await Telegram.checkUsernameAvailability(username: 'exampleUser');
+print('Username exists: $exists');
+```
+
+```dart
+/// Open a Telegram bot using its username
+Telegram.openBot(username: 'MyTelegramBot');
+```
+
+Import the package and call any of the methods in your Flutter app. For example:
+```dart
+import 'package:telegram/telegram.dart';
+
+void main() async {
+  try {
+    await Telegram.send(
+      username: 'UsamaSarwar',
+      message: 'Thanks for building Telegram Package :)'
+    );
+  } catch (e) {
+    print('Error: $e');
+  }
+}
 ```
 
 ## Contribution 💙
