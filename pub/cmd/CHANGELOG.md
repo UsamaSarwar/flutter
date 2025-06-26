@@ -1,11 +1,5 @@
-## 1.0.0-example
-Add Windows runner support with console output and DPI awareness
-
-- Created a manifest file for the Windows runner to enable DPI awareness and support for Windows 10 and 11.
-- Implemented utility functions in utils.cpp and utils.h for console creation, command line argument retrieval, and UTF-16 to UTF-8 string conversion.
-- Developed the Win32Window class in win32_window.cpp and win32_window.h to manage window creation, message handling, and theme updates based on system preferences.
-- Added placeholder files for auto installation and example usage in Dart.
-
+## 1.0.1
+Updated `example` usage and documentation for CMD package.
 
 ## 1.0.0
 
