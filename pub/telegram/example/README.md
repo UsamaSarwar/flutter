@@ -1,4 +1,4 @@
-# example
+# telegram_example
 
 A new Flutter project.
 

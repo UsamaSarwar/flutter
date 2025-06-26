@@ -1,6 +1,6 @@
 name: telegram
-description: A simple and light weight utility for sending message via Telegram...
-version: 0.0.9
+description: A comprehensive Telegram utility for Flutter with URL schemes, Bot API integration, media sharing, chat management, and Web App support.
+version: 1.0.0
 homepage: https://www.usama.dev
 repository: https://github.com/UsamaSarwar/flutter/tree/main/pub/telegram
 
@@ -12,22 +12,24 @@ dependencies:
   flutter:
     sdk: flutter
   url_launcher: ^6.3.1
+  http: ^1.4.0
   
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
-  cmd: ^0.0.13
+  flutter_lints: ^6.0.0
+  cmd: ^1.0.1
 
 flutter:
   uses-material-design: true
 
 screenshots:
-  - description: "© Telegram"
+  - description: "© Telegram Flutter Package"
     path: assets/logo.webp
 
 topics:
   - telegram
-  - message
-  - send
-  - chat
+  - bot-api
+  - messaging
+  - url-schemes
+  - media-sharing

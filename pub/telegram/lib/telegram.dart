@@ -1,410 +1,1057 @@
 library telegram;
 
-import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'src/bot_config.dart';
+import 'src/chat.dart';
+import 'src/media.dart';
+import 'src/members.dart';
+import 'src/messaging.dart';
+// Import all modules for the main Telegram class
+import 'src/url_schemes.dart';
+import 'src/webhook.dart';
 
-/// A simple and lightweight utility for sending messages via Telegram.
+export 'src/bot_config.dart';
+export 'src/chat.dart';
+export 'src/media.dart';
+export 'src/members.dart';
+export 'src/messaging.dart';
+// Export all modules
+export 'src/url_schemes.dart';
+export 'src/webhook.dart';
+
+/// A comprehensive Telegram utility that supports both client-side URL schemes
+/// and server-side Bot API functionality for Flutter applications.
+///
+/// This package provides methods for:
+/// - Sending messages via URL schemes
+/// - Bot API integration for automated messaging
+/// - Channel and group management
+/// - Media sharing and file uploads
+/// - User and chat information retrieval
 class Telegram {
-  /// Generates a Telegram URL for a given username and optional message.
+  /// Bot token for API requests. Set this to enable Bot API features.
+  static String? _botToken;
+
+  /// Sets the bot token for API requests
   ///
-  /// This method constructs a URL that can be used to open a Telegram chat
-  /// with the specified username. If a message is provided, it will be
-  /// included in the URL as a pre-filled text.
-  ///
-  /// Throws an [ArgumentError] if the username is empty.
-  /// Throws a [FormatException] if the URL generation fails.
-  ///
-  /// - Parameters:
-  ///   - username: The Telegram username for which the URL is to be generated.
-  ///   - message: An optional message to be included in the URL.
-  ///
-  /// - Returns: A [Uri] object representing the generated Telegram URL.
-  static Uri _generateUrl({required String username, String? message}) {
-    if (username.trim().isEmpty) {
-      throw ArgumentError('Username cannot be empty.');
-    }
-    try {
-      if (message != null && message.trim().isNotEmpty) {
-        return Uri.parse(
-            'https://t.me/$username?text=${Uri.encodeFull(message)}');
-      } else {
-        return Uri.parse('https://t.me/$username');
-      }
-    } catch (e) {
-      throw FormatException('Failed to generate URL: $e');
-    }
+  /// Get your bot token from @BotFather on Telegram
+  /// Example: '123456789:ABCdefGHIjklMNOpqrsTUVwxyz'
+  static void setBotToken(String token) {
+    _botToken = token;
   }
 
+  /// Gets the current bot token
+  static String? get botToken => _botToken;
+
+  // ========== URL Schemes Methods ==========
+
   /// Copies the Telegram message link to the clipboard.
-  ///
-  /// This method generates a URL based on the provided [username] and optional [message],
-  /// and then copies this URL to the system clipboard.
-  ///
-  /// If the operation is successful, the URL is printed to the console in debug mode.
-  /// If the operation fails, an exception is thrown.
-  ///
-  /// - Parameters:
-  ///   - username: The Telegram username to include in the generated URL. This parameter is required.
-  ///   - message: An optional message to include in the generated URL.
-  ///
-  /// - Throws: An [Exception] if the link could not be copied to the clipboard.
   static Future<void> copyLinkToClipboard({
     required String username,
     String? message,
   }) async {
-    Uri url = _generateUrl(username: username, message: message);
-    try {
-      await Clipboard.setData(ClipboardData(text: url.toString()));
-      if (kDebugMode) {
-        print('Copied to clipboard: $url');
-      }
-    } catch (e) {
-      throw Exception('Failed to copy link to clipboard: $e');
-    }
+    return TelegramUrlSchemes.copyLinkToClipboard(
+      username: username,
+      message: message,
+    );
   }
 
   /// Returns the Telegram message link as a String.
-  ///
-  /// This method generates a URL for a Telegram message link based on the provided
-  /// username and optional message.
-  ///
-  /// The [username] parameter is required and should be the Telegram username.
-  ///
-  /// The [message] parameter is optional and can be used to specify a particular
-  /// message within the chat.
-  ///
-  /// Returns a [String] representing the generated Telegram message link.
   static String getLink({
     required String username,
     String? message,
   }) {
-    Uri url = _generateUrl(username: username, message: message);
-    return url.toString();
+    return TelegramUrlSchemes.getLink(
+      username: username,
+      message: message,
+    );
   }
 
   /// Sends a message via Telegram.
-  ///
-  /// This method constructs a URL to send a message to a specified Telegram
-  /// username and attempts to launch it using the `launchUrl` function.
-  ///
-  /// If the message is successfully launched, it will print debug information
-  /// if the application is in debug mode.
-  ///
-  /// Throws an [Exception] if the URL could not be launched or if there was
-  /// an error during the process.
-  ///
-  /// Parameters:
-  /// - `username` (required): The Telegram username to send the message to.
-  /// - `message` (optional): The message to be sent. If not provided, only the
-  ///   URL will be launched without any message content.
-  ///
-  /// Example:
-  /// ```dart
-  /// await send(username: 'exampleUser', message: 'Hello, this is a test message.');
-  /// ```
   static Future<void> send({
     required String username,
     String? message,
   }) async {
-    Uri url = _generateUrl(username: username, message: message);
-    try {
-      bool launched = await launchUrl(
-        url,
-        mode: LaunchMode.externalNonBrowserApplication,
-        webOnlyWindowName: username,
-        webViewConfiguration: const WebViewConfiguration(
-          headers: <String, String>{
-            'User-Agent': 'Telegram',
-          },
-        ),
-      );
-      if (!launched) {
-        throw Exception('Could not launch Telegram link.');
-      }
-      if (kDebugMode) {
-        if (message != null && message.trim().isNotEmpty) {
-          print(
-              'Sending message to $username...\nMessage: $message\nURL: $url');
-        } else {
-          print('Sending message to $username...\nURL: $url');
-        }
-      }
-    } catch (e) {
-      throw Exception('Failed to send message: $e');
-    }
+    return TelegramUrlSchemes.send(
+      username: username,
+      message: message,
+    );
   }
 
   /// Checks if Telegram is installed on the device.
-  ///
-  /// This method attempts to launch a URL using Telegram's custom URL scheme.
-  /// If the URL can be launched, it indicates that Telegram is installed on the device.
-  ///
-  /// Returns a [Future] that completes with `true` if Telegram is installed,
-  /// and `false` otherwise.
-  ///
-  /// Throws an [Exception] if there is an error while attempting to check the
-  /// installation status.
   static Future<bool> isTelegramInstalled() async {
-    // Using Telegram's custom URL scheme.
-    final Uri telegramUri = Uri.parse('tg://resolve?domain=telegram');
-    try {
-      return await canLaunchUrl(telegramUri);
-    } catch (e) {
-      throw Exception('Failed to check Telegram installation: $e');
-    }
+    return TelegramUrlSchemes.isTelegramInstalled();
   }
 
   /// Opens a chat with the given username using Telegram's custom URL scheme.
-  ///
-  /// This method constructs a Telegram URL with the provided username and attempts
-  /// to launch it using the `launchUrl` function. If the username is empty, an
-  /// [ArgumentError] is thrown. If the URL cannot be launched, an [Exception] is thrown.
-  ///
-  /// The method uses the [LaunchMode.externalNonBrowserApplication] mode to open
-  /// the Telegram app directly.
-  ///
-  /// If the app is in debug mode, a message indicating the success of the operation
-  /// is printed to the console.
-  ///
-  /// Throws:
-  /// - [ArgumentError] if the username is empty.
-  /// - [Exception] if the URL cannot be launched or if any other error occurs.
-  ///
-  /// Example usage:
-  /// ```dart
-  /// await openChat(username: 'example_username');
-  /// ```
-  ///
-  /// Parameters:
-  /// - `username` (required): The Telegram username to open a chat with.
   static Future<void> openChat({required String username}) async {
-    if (username.trim().isEmpty) {
-      throw ArgumentError('Username cannot be empty.');
-    }
-    final Uri chatUri = Uri.parse('tg://resolve?domain=$username');
-    try {
-      bool launched = await launchUrl(
-        chatUri,
-        mode: LaunchMode.externalNonBrowserApplication,
-      );
-      if (!launched) {
-        throw Exception('Could not open chat for $username.');
-      }
-      if (kDebugMode) {
-        print('Opened chat for $username using $chatUri');
-      }
-    } catch (e) {
-      throw Exception('Failed to open chat: $e');
-    }
+    return TelegramUrlSchemes.openChat(username: username);
   }
 
   /// Joins a Telegram channel or group using an invite link.
-  ///
-  /// This method takes an invite link as a required parameter and attempts to
-  /// join the corresponding Telegram channel or group. It validates the invite
-  /// link, parses it into a URI, and then launches the URI using an external
-  /// non-browser application.
-  ///
-  /// If the invite link is empty or invalid, an appropriate error is thrown.
-  /// If the attempt to join the channel fails, an exception is thrown.
-  ///
-  /// In debug mode, a message is printed to the console indicating the invite
-  /// link being used to join the channel.
-  ///
-  /// Throws:
-  /// - [ArgumentError] if the invite link is empty.
-  /// - [FormatException] if the invite link is invalid.
-  /// - [Exception] if the attempt to join the channel fails.
-  ///
-  /// Example usage:
-  /// ```dart
-  /// await joinChannel(inviteLink: 'https://t.me/joinchat/XXXXXXX');
-  /// ```
   static Future<void> joinChannel({required String inviteLink}) async {
-    if (inviteLink.trim().isEmpty) {
-      throw ArgumentError('Invite link cannot be empty.');
-    }
-    Uri channelUri;
-    try {
-      channelUri = Uri.parse(inviteLink);
-    } catch (e) {
-      throw FormatException('Invalid invite link: $e');
-    }
-    try {
-      bool launched = await launchUrl(
-        channelUri,
-        mode: LaunchMode.externalNonBrowserApplication,
-      );
-      if (!launched) {
-        throw Exception('Could not join channel using $inviteLink.');
-      }
-      if (kDebugMode) {
-        print('Joining channel using $inviteLink');
-      }
-    } catch (e) {
-      throw Exception('Failed to join channel: $e');
-    }
+    return TelegramUrlSchemes.joinChannel(inviteLink: inviteLink);
   }
 
   /// Shares a contact via Telegram.
-  ///
-  /// This method constructs a Telegram link to share a contact.
-  /// The contact details include a phone number, first name, and optional last name.
-  ///
-  /// Throws:
-  /// - [ArgumentError] if the phone number or first name is empty.
-  /// - [Exception] if the URL cannot be launched.
-  ///
-  /// Example usage:
-  /// ```dart
-  /// await shareContact(phone: '+1234567890', firstName: 'John', lastName: 'Doe');
-  /// ```
   static Future<void> shareContact({
     required String phone,
     required String firstName,
     String? lastName,
   }) async {
-    if (phone.trim().isEmpty || firstName.trim().isEmpty) {
-      throw ArgumentError('Phone number and first name cannot be empty.');
-    }
-
-    String contactUrl = 'https://t.me/share/url?'
-        'url=tel:$phone&'
-        'text=Contact: $firstName ${lastName ?? ""}';
-
-    try {
-      bool launched = await launchUrl(Uri.parse(contactUrl),
-          mode: LaunchMode.externalNonBrowserApplication);
-      if (!launched) {
-        throw Exception('Could not share contact via Telegram.');
-      }
-      if (kDebugMode) {
-        print('Sharing contact: $firstName ${lastName ?? ""} - $phone');
-      }
-    } catch (e) {
-      throw Exception('Failed to share contact: $e');
-    }
+    return TelegramUrlSchemes.shareContact(
+      phone: phone,
+      firstName: firstName,
+      lastName: lastName,
+    );
   }
 
   /// Opens a Telegram group by its username.
-  ///
-  /// Throws:
-  /// - [ArgumentError] if the group username is empty.
-  /// - [Exception] if the URL cannot be launched.
-  ///
-  /// Example usage:
-  /// ```dart
-  /// await openGroup(username: 'yourgroupname');
-  /// ```
   static Future<void> openGroup({required String username}) async {
-    if (username.trim().isEmpty) {
-      throw ArgumentError('Group username cannot be empty.');
-    }
-
-    Uri groupUri = Uri.parse('https://t.me/$username');
-
-    try {
-      bool launched = await launchUrl(groupUri,
-          mode: LaunchMode.externalNonBrowserApplication);
-      if (!launched) {
-        throw Exception('Could not open group: $username');
-      }
-      if (kDebugMode) {
-        print('Opened Telegram group: $username');
-      }
-    } catch (e) {
-      throw Exception('Failed to open group: $e');
-    }
+    return TelegramUrlSchemes.openGroup(username: username);
   }
 
   /// Sends a media file via Telegram.
-  ///
-  /// The [filePath] should be a valid URL pointing to the media file.
-  ///
-  /// Throws:
-  /// - [ArgumentError] if the filePath is empty.
-  /// - [Exception] if the URL cannot be launched.
-  ///
-  /// Example usage:
-  /// ```dart
-  /// await sendMedia(filePath: 'https://example.com/sample.jpg');
-  /// ```
   static Future<void> sendMedia({required String filePath}) async {
-    if (filePath.trim().isEmpty) {
-      throw ArgumentError('File path cannot be empty.');
-    }
-
-    Uri mediaUri = Uri.parse('https://t.me/share/url?url=$filePath');
-
-    try {
-      bool launched = await launchUrl(mediaUri,
-          mode: LaunchMode.externalNonBrowserApplication);
-      if (!launched) {
-        throw Exception('Could not send media file.');
-      }
-      if (kDebugMode) {
-        print('Sending media: $filePath');
-      }
-    } catch (e) {
-      throw Exception('Failed to send media: $e');
-    }
+    return TelegramUrlSchemes.sendMedia(filePath: filePath);
   }
 
   /// Checks if a Telegram username exists.
-  ///
-  /// Throws:
-  /// - [ArgumentError] if the username is empty.
-  /// - [Exception] if the request fails.
-  ///
-  /// Example usage:
-  /// ```dart
-  /// bool exists = await checkUsernameAvailability(username: 'exampleUser');
-  /// ```
-  static Future<bool> checkUsernameAvailability(
-      {required String username}) async {
-    if (username.trim().isEmpty) {
-      throw ArgumentError('Username cannot be empty.');
-    }
-
-    Uri usernameUri = Uri.parse('https://t.me/$username');
-
-    try {
-      bool canOpen = await canLaunchUrl(usernameUri);
-      return canOpen;
-    } catch (e) {
-      throw Exception('Failed to check username availability: $e');
-    }
+  static Future<bool> checkUsernameAvailability({required String username}) async {
+    return TelegramUrlSchemes.checkUsernameAvailability(username: username);
   }
 
   /// Opens a Telegram bot using its username.
-  ///
-  /// Throws:
-  /// - [ArgumentError] if the bot username is empty.
-  /// - [Exception] if the URL cannot be launched.
-  ///
-  /// Example usage:
-  /// ```dart
-  /// await openBot(username: 'MyTelegramBot');
-  /// ```
   static Future<void> openBot({required String username}) async {
-    if (username.trim().isEmpty) {
-      throw ArgumentError('Bot username cannot be empty.');
-    }
+    return TelegramUrlSchemes.openBot(username: username);
+  }
 
-    Uri botUri = Uri.parse('https://t.me/$username');
+  /// Generates a share URL for content.
+  static String generateShareUrl({
+    String? text,
+    String? url,
+  }) {
+    return TelegramUrlSchemes.generateShareUrl(text: text, url: url);
+  }
 
-    try {
-      bool launched = await launchUrl(botUri,
-          mode: LaunchMode.externalNonBrowserApplication);
-      if (!launched) {
-        throw Exception('Could not open bot: $username');
-      }
-      if (kDebugMode) {
-        print('Opened Telegram bot: $username');
-      }
-    } catch (e) {
-      throw Exception('Failed to open bot: $e');
+  /// Opens a Telegram sticker set.
+  static Future<void> openStickerSet({required String stickerSetName}) async {
+    return TelegramUrlSchemes.openStickerSet(stickerSetName: stickerSetName);
+  }
+
+  /// Opens a Telegram theme.
+  static Future<void> openTheme({required String themeName}) async {
+    return TelegramUrlSchemes.openTheme(themeName: themeName);
+  }
+
+  /// Opens a Telegram Web App.
+  static Future<void> openWebApp({
+    required String botUsername,
+    required String webAppUrl,
+    String? startParam,
+  }) async {
+    return TelegramUrlSchemes.openWebApp(
+      botUsername: botUsername,
+      webAppUrl: webAppUrl,
+      startParam: startParam,
+    );
+  }
+
+  /// Creates an inline keyboard URL for Telegram.
+  static String createInlineKeyboardUrl({
+    required String text,
+    required String url,
+  }) {
+    return TelegramUrlSchemes.createInlineKeyboardUrl(
+      text: text,
+      url: url,
+    );
+  }
+
+  // ========== Bot API Methods ==========
+
+  /// Helper method to ensure bot token is set
+  static void _ensureBotToken() {
+    if (_botToken == null || _botToken!.trim().isEmpty) {
+      throw Exception('Bot token not set. Call Telegram.setBotToken() first.');
     }
+  }
+
+  /// Gets information about the bot via Bot API.
+  static Future<Map<String, dynamic>> getMe() async {
+    if (_botToken == null || _botToken!.trim().isEmpty) {
+      throw Exception('Bot token not set. Call Telegram.setBotToken() first.');
+    }
+    return TelegramMessaging.getMe(_botToken!);
+  }
+
+  /// Sends a message via Bot API.
+  static Future<Map<String, dynamic>> sendMessage({
+    required String chatId,
+    required String text,
+    String? parseMode,
+    bool? disableWebPagePreview,
+    bool? disableNotification,
+    int? replyToMessageId,
+  }) async {
+    _ensureBotToken();
+    return TelegramMessaging.sendMessage(
+      botToken: _botToken!,
+      chatId: chatId,
+      text: text,
+      parseMode: parseMode,
+      disableWebPagePreview: disableWebPagePreview,
+      disableNotification: disableNotification,
+      replyToMessageId: replyToMessageId,
+    );
+  }
+
+  /// Forwards a message via Bot API.
+  static Future<Map<String, dynamic>> forwardMessage({
+    required String chatId,
+    required String fromChatId,
+    required int messageId,
+    bool? disableNotification,
+  }) async {
+    _ensureBotToken();
+    return TelegramMessaging.forwardMessage(
+      botToken: _botToken!,
+      chatId: chatId,
+      fromChatId: fromChatId,
+      messageId: messageId,
+      disableNotification: disableNotification,
+    );
+  }
+
+  /// Sends a location via Bot API.
+  static Future<Map<String, dynamic>> sendLocation({
+    required String chatId,
+    required double latitude,
+    required double longitude,
+    double? horizontalAccuracy,
+    int? livePeriod,
+    int? heading,
+    int? proximityAlertRadius,
+    bool? disableNotification,
+    int? replyToMessageId,
+  }) async {
+    _ensureBotToken();
+    return TelegramMessaging.sendLocation(
+      botToken: _botToken!,
+      chatId: chatId,
+      latitude: latitude,
+      longitude: longitude,
+      horizontalAccuracy: horizontalAccuracy,
+      livePeriod: livePeriod,
+      heading: heading,
+      proximityAlertRadius: proximityAlertRadius,
+      disableNotification: disableNotification,
+      replyToMessageId: replyToMessageId,
+    );
+  }
+
+  // ========== Media Methods ==========
+
+  /// Sends a photo via Bot API.
+  static Future<Map<String, dynamic>> sendPhoto({
+    required String chatId,
+    required String photo,
+    String? caption,
+    String? parseMode,
+    bool? disableNotification,
+    int? replyToMessageId,
+  }) async {
+    _ensureBotToken();
+    return TelegramMedia.sendPhoto(
+      botToken: _botToken!,
+      chatId: chatId,
+      photo: photo,
+      caption: caption,
+      parseMode: parseMode,
+      disableNotification: disableNotification,
+      replyToMessageId: replyToMessageId,
+    );
+  }
+
+  /// Sends an audio file via Bot API.
+  static Future<Map<String, dynamic>> sendAudio({
+    required String chatId,
+    required String audio,
+    String? caption,
+    String? parseMode,
+    int? duration,
+    String? performer,
+    String? title,
+    bool? disableNotification,
+    int? replyToMessageId,
+  }) async {
+    _ensureBotToken();
+    return TelegramMedia.sendAudio(
+      botToken: _botToken!,
+      chatId: chatId,
+      audio: audio,
+      caption: caption,
+      parseMode: parseMode,
+      duration: duration,
+      performer: performer,
+      title: title,
+      disableNotification: disableNotification,
+      replyToMessageId: replyToMessageId,
+    );
+  }
+
+  /// Sends a document via Bot API.
+  static Future<Map<String, dynamic>> sendDocument({
+    required String chatId,
+    required String document,
+    String? caption,
+    String? parseMode,
+    bool? disableNotification,
+    int? replyToMessageId,
+  }) async {
+    _ensureBotToken();
+    return TelegramMedia.sendDocument(
+      botToken: _botToken!,
+      chatId: chatId,
+      document: document,
+      caption: caption,
+      parseMode: parseMode,
+      disableNotification: disableNotification,
+      replyToMessageId: replyToMessageId,
+    );
+  }
+
+  /// Sends a video via Bot API.
+  static Future<Map<String, dynamic>> sendVideo({
+    required String chatId,
+    required String video,
+    int? duration,
+    int? width,
+    int? height,
+    String? caption,
+    String? parseMode,
+    bool? supportsStreaming,
+    bool? disableNotification,
+    int? replyToMessageId,
+  }) async {
+    _ensureBotToken();
+    return TelegramMedia.sendVideo(
+      botToken: _botToken!,
+      chatId: chatId,
+      video: video,
+      duration: duration,
+      width: width,
+      height: height,
+      caption: caption,
+      parseMode: parseMode,
+      supportsStreaming: supportsStreaming,
+      disableNotification: disableNotification,
+      replyToMessageId: replyToMessageId,
+    );
+  }
+
+  /// Sends a voice message via Bot API.
+  static Future<Map<String, dynamic>> sendVoice({
+    required String chatId,
+    required String voice,
+    String? caption,
+    String? parseMode,
+    int? duration,
+    bool? disableNotification,
+    int? replyToMessageId,
+  }) async {
+    _ensureBotToken();
+    return TelegramMedia.sendVoice(
+      botToken: _botToken!,
+      chatId: chatId,
+      voice: voice,
+      caption: caption,
+      parseMode: parseMode,
+      duration: duration,
+      disableNotification: disableNotification,
+      replyToMessageId: replyToMessageId,
+    );
+  }
+
+  /// Sends a video note via Bot API.
+  static Future<Map<String, dynamic>> sendVideoNote({
+    required String chatId,
+    required String videoNote,
+    int? duration,
+    int? length,
+    bool? disableNotification,
+    int? replyToMessageId,
+  }) async {
+    _ensureBotToken();
+    return TelegramMedia.sendVideoNote(
+      botToken: _botToken!,
+      chatId: chatId,
+      videoNote: videoNote,
+      duration: duration,
+      length: length,
+      disableNotification: disableNotification,
+      replyToMessageId: replyToMessageId,
+    );
+  }
+
+  /// Sends an animation via Bot API.
+  static Future<Map<String, dynamic>> sendAnimation({
+    required String chatId,
+    required String animation,
+    int? duration,
+    int? width,
+    int? height,
+    String? caption,
+    String? parseMode,
+    bool? disableNotification,
+    int? replyToMessageId,
+  }) async {
+    _ensureBotToken();
+    return TelegramMedia.sendAnimation(
+      botToken: _botToken!,
+      chatId: chatId,
+      animation: animation,
+      duration: duration,
+      width: width,
+      height: height,
+      caption: caption,
+      parseMode: parseMode,
+      disableNotification: disableNotification,
+      replyToMessageId: replyToMessageId,
+    );
+  }
+
+  /// Sends a sticker via Bot API.
+  static Future<Map<String, dynamic>> sendSticker({
+    required String chatId,
+    required String sticker,
+    bool? disableNotification,
+    int? replyToMessageId,
+  }) async {
+    _ensureBotToken();
+    return TelegramMedia.sendSticker(
+      botToken: _botToken!,
+      chatId: chatId,
+      sticker: sticker,
+      disableNotification: disableNotification,
+      replyToMessageId: replyToMessageId,
+    );
+  }
+
+  // ========== Chat Management Methods ==========
+
+  /// Gets information about a chat via Bot API.
+  static Future<Map<String, dynamic>> getChat({required String chatId}) async {
+    _ensureBotToken();
+    return TelegramChat.getChat(
+      botToken: _botToken!,
+      chatId: chatId,
+    );
+  }
+
+  /// Exports a chat invite link via Bot API.
+  static Future<String> exportChatInviteLink({required String chatId}) async {
+    _ensureBotToken();
+    return TelegramChat.exportChatInviteLink(
+      botToken: _botToken!,
+      chatId: chatId,
+    );
+  }
+
+  /// Creates a chat invite link via Bot API.
+  static Future<Map<String, dynamic>> createChatInviteLink({
+    required String chatId,
+    String? name,
+    int? expireDate,
+    int? memberLimit,
+    bool? createsJoinRequest,
+  }) async {
+    _ensureBotToken();
+    return TelegramChat.createChatInviteLink(
+      botToken: _botToken!,
+      chatId: chatId,
+      name: name,
+      expireDate: expireDate,
+      memberLimit: memberLimit,
+      createsJoinRequest: createsJoinRequest,
+    );
+  }
+
+  /// Edits a chat invite link via Bot API.
+  static Future<Map<String, dynamic>> editChatInviteLink({
+    required String chatId,
+    required String inviteLink,
+    String? name,
+    int? expireDate,
+    int? memberLimit,
+    bool? createsJoinRequest,
+  }) async {
+    _ensureBotToken();
+    return TelegramChat.editChatInviteLink(
+      botToken: _botToken!,
+      chatId: chatId,
+      inviteLink: inviteLink,
+      name: name,
+      expireDate: expireDate,
+      memberLimit: memberLimit,
+      createsJoinRequest: createsJoinRequest,
+    );
+  }
+
+  /// Revokes a chat invite link via Bot API.
+  static Future<Map<String, dynamic>> revokeChatInviteLink({
+    required String chatId,
+    required String inviteLink,
+  }) async {
+    _ensureBotToken();
+    return TelegramChat.revokeChatInviteLink(
+      botToken: _botToken!,
+      chatId: chatId,
+      inviteLink: inviteLink,
+    );
+  }
+
+  // ========== Bot Configuration Methods ==========
+
+  /// Sets the list of bot commands via Bot API.
+  static Future<bool> setMyCommands({
+    required List<Map<String, String>> commands,
+    String? scope,
+    String? languageCode,
+  }) async {
+    _ensureBotToken();
+    return TelegramBotConfig.setMyCommands(
+      botToken: _botToken!,
+      commands: commands,
+      scope: scope,
+      languageCode: languageCode,
+    );
+  }
+
+  /// Gets the list of bot commands via Bot API.
+  static Future<List<Map<String, dynamic>>> getMyCommands({
+    String? scope,
+    String? languageCode,
+  }) async {
+    _ensureBotToken();
+    return TelegramBotConfig.getMyCommands(
+      botToken: _botToken!,
+      scope: scope,
+      languageCode: languageCode,
+    );
+  }
+
+  // ========== Additional Bot API Methods ==========
+
+  /// Sends a contact via Bot API.
+  static Future<Map<String, dynamic>> sendContact({
+    required String chatId,
+    required String phoneNumber,
+    required String firstName,
+    String? lastName,
+    String? vcard,
+    bool? disableNotification,
+    int? replyToMessageId,
+  }) async {
+    _ensureBotToken();
+    return TelegramMessaging.sendContact(
+      botToken: _botToken!,
+      chatId: chatId,
+      phoneNumber: phoneNumber,
+      firstName: firstName,
+      lastName: lastName,
+      vcard: vcard,
+      disableNotification: disableNotification,
+      replyToMessageId: replyToMessageId,
+    );
+  }
+
+  /// Sends a venue via Bot API.
+  static Future<Map<String, dynamic>> sendVenue({
+    required String chatId,
+    required double latitude,
+    required double longitude,
+    required String title,
+    required String address,
+    String? foursquareId,
+    String? foursquareType,
+    String? googlePlaceId,
+    String? googlePlaceType,
+    bool? disableNotification,
+    int? replyToMessageId,
+  }) async {
+    _ensureBotToken();
+    return TelegramMessaging.sendVenue(
+      botToken: _botToken!,
+      chatId: chatId,
+      latitude: latitude,
+      longitude: longitude,
+      title: title,
+      address: address,
+      foursquareId: foursquareId,
+      foursquareType: foursquareType,
+      googlePlaceId: googlePlaceId,
+      googlePlaceType: googlePlaceType,
+      disableNotification: disableNotification,
+      replyToMessageId: replyToMessageId,
+    );
+  }
+
+  /// Sends a poll via Bot API.
+  static Future<Map<String, dynamic>> sendPoll({
+    required String chatId,
+    required String question,
+    required List<String> options,
+    bool? isAnonymous,
+    String? type,
+    bool? allowsMultipleAnswers,
+    int? correctOptionId,
+    String? explanation,
+    String? explanationParseMode,
+    int? openPeriod,
+    int? closeDate,
+    bool? isClosed,
+    bool? disableNotification,
+    int? replyToMessageId,
+  }) async {
+    _ensureBotToken();
+    return TelegramMessaging.sendPoll(
+      botToken: _botToken!,
+      chatId: chatId,
+      question: question,
+      options: options,
+      isAnonymous: isAnonymous,
+      type: type,
+      allowsMultipleAnswers: allowsMultipleAnswers,
+      correctOptionId: correctOptionId,
+      explanation: explanation,
+      explanationParseMode: explanationParseMode,
+      openPeriod: openPeriod,
+      closeDate: closeDate,
+      isClosed: isClosed,
+      disableNotification: disableNotification,
+      replyToMessageId: replyToMessageId,
+    );
+  }
+
+  /// Sends a dice via Bot API.
+  static Future<Map<String, dynamic>> sendDice({
+    required String chatId,
+    String? emoji,
+    bool? disableNotification,
+    int? replyToMessageId,
+  }) async {
+    _ensureBotToken();
+    return TelegramMessaging.sendDice(
+      botToken: _botToken!,
+      chatId: chatId,
+      emoji: emoji,
+      disableNotification: disableNotification,
+      replyToMessageId: replyToMessageId,
+    );
+  }
+
+  /// Answers a callback query via Bot API.
+  static Future<bool> answerCallbackQuery({
+    required String callbackQueryId,
+    String? text,
+    bool? showAlert,
+    String? url,
+    int? cacheTime,
+  }) async {
+    _ensureBotToken();
+    return TelegramMessaging.answerCallbackQuery(
+      botToken: _botToken!,
+      callbackQueryId: callbackQueryId,
+      text: text,
+      showAlert: showAlert,
+      url: url,
+      cacheTime: cacheTime,
+    );
+  }
+
+  /// Edits a message text via Bot API.
+  static Future<Map<String, dynamic>> editMessageText({
+    String? chatId,
+    int? messageId,
+    String? inlineMessageId,
+    required String text,
+    String? parseMode,
+    bool? disableWebPagePreview,
+  }) async {
+    _ensureBotToken();
+    return TelegramMessaging.editMessageText(
+      botToken: _botToken!,
+      chatId: chatId,
+      messageId: messageId,
+      inlineMessageId: inlineMessageId,
+      text: text,
+      parseMode: parseMode,
+      disableWebPagePreview: disableWebPagePreview,
+    );
+  }
+
+  /// Deletes a message via Bot API.
+  static Future<bool> deleteMessage({
+    required String chatId,
+    required int messageId,
+  }) async {
+    _ensureBotToken();
+    return TelegramMessaging.deleteMessage(
+      botToken: _botToken!,
+      chatId: chatId,
+      messageId: messageId,
+    );
+  }
+
+  /// Gets updates via Bot API.
+  static Future<List<Map<String, dynamic>>> getUpdates({
+    int? offset,
+    int? limit,
+    int? timeout,
+    List<String>? allowedUpdates,
+  }) async {
+    _ensureBotToken();
+    return TelegramMessaging.getUpdates(
+      botToken: _botToken!,
+      offset: offset,
+      limit: limit,
+      timeout: timeout,
+      allowedUpdates: allowedUpdates,
+    );
+  }
+
+  /// Gets user profile photos via Bot API.
+  static Future<Map<String, dynamic>> getUserProfilePhotos({
+    required int userId,
+    int? offset,
+    int? limit,
+  }) async {
+    _ensureBotToken();
+    return TelegramMedia.getUserProfilePhotos(
+      botToken: _botToken!,
+      userId: userId,
+      offset: offset,
+      limit: limit,
+    );
+  }
+
+  /// Gets a file via Bot API.
+  static Future<Map<String, dynamic>> getFile({required String fileId}) async {
+    _ensureBotToken();
+    return TelegramMedia.getFile(
+      botToken: _botToken!,
+      fileId: fileId,
+    );
+  }
+
+  // ========== Additional Chat Management Methods ==========
+
+  /// Gets the number of members in a chat via Bot API.
+  static Future<int> getChatMemberCount({required String chatId}) async {
+    _ensureBotToken();
+    return TelegramChat.getChatMemberCount(
+      botToken: _botToken!,
+      chatId: chatId,
+    );
+  }
+
+  /// Gets information about a chat member via Bot API.
+  static Future<Map<String, dynamic>> getChatMember({
+    required String chatId,
+    required int userId,
+  }) async {
+    _ensureBotToken();
+    return TelegramChat.getChatMember(
+      botToken: _botToken!,
+      chatId: chatId,
+      userId: userId,
+    );
+  }
+
+  /// Gets a chat administrator via Bot API.
+  static Future<List<Map<String, dynamic>>> getChatAdministrators({
+    required String chatId,
+  }) async {
+    _ensureBotToken();
+    return TelegramChat.getChatAdministrators(
+      botToken: _botToken!,
+      chatId: chatId,
+    );
+  }
+
+  // ========== Member Management Methods ==========
+
+  /// Bans a chat member via Bot API.
+  static Future<bool> banChatMember({
+    required String chatId,
+    required int userId,
+    int? untilDate,
+    bool? revokeMessages,
+  }) async {
+    _ensureBotToken();
+    return TelegramMembers.banChatMember(
+      botToken: _botToken!,
+      chatId: chatId,
+      userId: userId,
+      untilDate: untilDate,
+      revokeMessages: revokeMessages,
+    );
+  }
+
+  /// Unbans a chat member via Bot API.
+  static Future<bool> unbanChatMember({
+    required String chatId,
+    required int userId,
+    bool? onlyIfBanned,
+  }) async {
+    _ensureBotToken();
+    return TelegramMembers.unbanChatMember(
+      botToken: _botToken!,
+      chatId: chatId,
+      userId: userId,
+      onlyIfBanned: onlyIfBanned,
+    );
+  }
+
+  /// Restricts a chat member via Bot API.
+  static Future<bool> restrictChatMember({
+    required String chatId,
+    required int userId,
+    required Map<String, bool> permissions,
+    int? untilDate,
+  }) async {
+    _ensureBotToken();
+    return TelegramMembers.restrictChatMember(
+      botToken: _botToken!,
+      chatId: chatId,
+      userId: userId,
+      permissions: permissions,
+      untilDate: untilDate,
+    );
+  }
+
+  /// Promotes a chat member via Bot API.
+  static Future<bool> promoteChatMember({
+    required String chatId,
+    required int userId,
+    bool? isAnonymous,
+    bool? canManageChat,
+    bool? canPostMessages,
+    bool? canEditMessages,
+    bool? canDeleteMessages,
+    bool? canManageVideoChats,
+    bool? canRestrictMembers,
+    bool? canPromoteMembers,
+    bool? canChangeInfo,
+    bool? canInviteUsers,
+    bool? canPinMessages,
+  }) async {
+    _ensureBotToken();
+    return TelegramMembers.promoteChatMember(
+      botToken: _botToken!,
+      chatId: chatId,
+      userId: userId,
+      isAnonymous: isAnonymous,
+      canManageChat: canManageChat,
+      canPostMessages: canPostMessages,
+      canEditMessages: canEditMessages,
+      canDeleteMessages: canDeleteMessages,
+      canManageVideoChats: canManageVideoChats,
+      canRestrictMembers: canRestrictMembers,
+      canPromoteMembers: canPromoteMembers,
+      canChangeInfo: canChangeInfo,
+      canInviteUsers: canInviteUsers,
+      canPinMessages: canPinMessages,
+    );
+  }
+
+  /// Sets a custom title for a chat administrator via Bot API.
+  static Future<bool> setChatAdministratorCustomTitle({
+    required String chatId,
+    required int userId,
+    required String customTitle,
+  }) async {
+    _ensureBotToken();
+    return TelegramMembers.setChatAdministratorCustomTitle(
+      botToken: _botToken!,
+      chatId: chatId,
+      userId: userId,
+      customTitle: customTitle,
+    );
+  }
+
+  // ========== Webhook Methods ==========
+
+  /// Sets a webhook via Bot API.
+  static Future<bool> setWebhook({
+    required String url,
+    String? certificate,
+    String? ipAddress,
+    int? maxConnections,
+    List<String>? allowedUpdates,
+    bool? dropPendingUpdates,
+    String? secretToken,
+  }) async {
+    _ensureBotToken();
+    return TelegramWebhook.setWebhook(
+      botToken: _botToken!,
+      url: url,
+      certificate: certificate,
+      ipAddress: ipAddress,
+      maxConnections: maxConnections,
+      allowedUpdates: allowedUpdates,
+      dropPendingUpdates: dropPendingUpdates,
+      secretToken: secretToken,
+    );
+  }
+
+  /// Deletes a webhook via Bot API.
+  static Future<bool> deleteWebhook({bool? dropPendingUpdates}) async {
+    _ensureBotToken();
+    return TelegramWebhook.deleteWebhook(
+      botToken: _botToken!,
+      dropPendingUpdates: dropPendingUpdates,
+    );
+  }
+
+  /// Gets webhook information via Bot API.
+  static Future<Map<String, dynamic>> getWebhookInfo() async {
+    _ensureBotToken();
+    return TelegramWebhook.getWebhookInfo(botToken: _botToken!);
+  }
+
+  // ========== Additional Bot Configuration Methods ==========
+
+  /// Sets the bot's description via Bot API.
+  static Future<bool> setMyDescription({
+    String? description,
+    String? languageCode,
+  }) async {
+    _ensureBotToken();
+    return TelegramBotConfig.setMyDescription(
+      botToken: _botToken!,
+      description: description,
+      languageCode: languageCode,
+    );
+  }
+
+  /// Gets the bot's description via Bot API.
+  static Future<Map<String, dynamic>> getMyDescription({
+    String? languageCode,
+  }) async {
+    _ensureBotToken();
+    return TelegramBotConfig.getMyDescription(
+      botToken: _botToken!,
+      languageCode: languageCode,
+    );
+  }
+
+  /// Sets the bot's short description via Bot API.
+  static Future<bool> setMyShortDescription({
+    String? shortDescription,
+    String? languageCode,
+  }) async {
+    _ensureBotToken();
+    return TelegramBotConfig.setMyShortDescription(
+      botToken: _botToken!,
+      shortDescription: shortDescription,
+      languageCode: languageCode,
+    );
+  }
+
+  /// Gets the bot's short description via Bot API.
+  static Future<Map<String, dynamic>> getMyShortDescription({
+    String? languageCode,
+  }) async {
+    _ensureBotToken();
+    return TelegramBotConfig.getMyShortDescription(
+      botToken: _botToken!,
+      languageCode: languageCode,
+    );
+  }
+
+  // ========== Additional Chat Management Methods ==========
+
+  /// Deletes a chat photo via Bot API.
+  static Future<bool> deleteChatPhoto({required String chatId}) async {
+    _ensureBotToken();
+    return TelegramChat.deleteChatPhoto(
+      botToken: _botToken!,
+      chatId: chatId,
+    );
+  }
+
+  /// Sets a chat title via Bot API.
+  static Future<bool> setChatTitle({
+    required String chatId,
+    required String title,
+  }) async {
+    _ensureBotToken();
+    return TelegramChat.setChatTitle(
+      botToken: _botToken!,
+      chatId: chatId,
+      title: title,
+    );
+  }
+
+  /// Sets a chat description via Bot API.
+  static Future<bool> setChatDescription({
+    required String chatId,
+    String? description,
+  }) async {
+    _ensureBotToken();
+    return TelegramChat.setChatDescription(
+      botToken: _botToken!,
+      chatId: chatId,
+      description: description,
+    );
+  }
+
+  /// Pins a chat message via Bot API.
+  static Future<bool> pinChatMessage({
+    required String chatId,
+    required int messageId,
+    bool? disableNotification,
+  }) async {
+    _ensureBotToken();
+    return TelegramChat.pinChatMessage(
+      botToken: _botToken!,
+      chatId: chatId,
+      messageId: messageId,
+      disableNotification: disableNotification,
+    );
+  }
+
+  /// Unpins a chat message via Bot API.
+  static Future<bool> unpinChatMessage({
+    required String chatId,
+    int? messageId,
+  }) async {
+    _ensureBotToken();
+    return TelegramChat.unpinChatMessage(
+      botToken: _botToken!,
+      chatId: chatId,
+      messageId: messageId,
+    );
+  }
+
+  /// Unpins all chat messages via Bot API.
+  static Future<bool> unpinAllChatMessages({
+    required String chatId,
+  }) async {
+    _ensureBotToken();
+    return TelegramChat.unpinAllChatMessages(
+      botToken: _botToken!,
+      chatId: chatId,
+    );
+  }
+
+  /// Leaves a chat via Bot API.
+  static Future<bool> leaveChat({required String chatId}) async {
+    _ensureBotToken();
+    return TelegramChat.leaveChat(
+      botToken: _botToken!,
+      chatId: chatId,
+    );
   }
 }
