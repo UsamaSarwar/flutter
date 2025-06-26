@@ -1,6 +1,8 @@
 // Verification script to check that all required methods are available
 // This is a compile-time check - if it compiles, all methods exist
 
+import 'package:flutter/foundation.dart';
+
 import 'lib/telegram.dart';
 
 void main() {
@@ -47,5 +49,7 @@ void main() {
   Telegram.sendMessage(chatId: 'test', text: 'test');
   Telegram.sendPhoto(chatId: 'test', photo: 'test');
 
-  print('✅ All required methods are available and accessible!');
+  if (kDebugMode) {
+    print('✅ All required methods are available and accessible!');
+  }
 }
