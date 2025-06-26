@@ -1,4 +1,4 @@
-# example
+# cmd_example
 
 A new Flutter project.
 
