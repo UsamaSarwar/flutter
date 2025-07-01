@@ -79,6 +79,17 @@ build_android_bundle() {
         echo -e "${GREEN}✅ App Bundle built successfully!${NC}"
         echo -e "${GREEN}📦 Location: export/app-release.aab${NC}"
         show_aab_info "export/app-release.aab"
+
+        # Copy debug symbols if available
+        if [ -f "build/app/outputs/bundle/release/debug-symbols.zip" ]; then
+            cp build/app/outputs/bundle/release/debug-symbols.zip export/debug_symbols.zip
+            echo -e "${GREEN}✅ Debug symbols exported to: export/debug_symbols.zip${NC}"
+        elif [ -d "build/app/intermediates/merged_native_libs/release/mergeReleaseNativeLibs/out/lib" ]; then
+            echo -e "${YELLOW}🔨 Zipping native libs for debug symbols...${NC}"
+            (cd build/app/intermediates/merged_native_libs/release/mergeReleaseNativeLibs/out && zip -r debug-symbols.zip lib)
+            cp build/app/intermediates/merged_native_libs/release/mergeReleaseNativeLibs/out/debug-symbols.zip export/debug_symbols.zip
+            echo -e "${GREEN}✅ Debug symbols created and exported to: export/debug_symbols.zip${NC}"
+        fi
     else
         echo -e "${RED}❌ App Bundle build failed${NC}"
     fi
